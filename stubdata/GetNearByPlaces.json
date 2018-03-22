@@ -1,0 +1,7 @@
+[
+  { latitude: 51.4247, longitude:-.9329, poi_id: 'POI_ID1', poi_name: 'Asda Lower Early', totalUser: 150, address: 'Asda. Lower Early. RG2 1AF'},
+  { latitude: 51.4038, longitude:-.9474, poi_id: 'POI_ID2', poi_name: 'Shinfield Infant School', totalUser: 20, address: 'Green Road. Shinfield'},
+  { latitude: 51.4427, longitude:-.9528, poi_id: 'POI_ID3', poi_name: 'Reading University', totalUser: 300, address: 'Whitewood Campus'},
+  { latitude: 51.4157, longitude:-.9748, poi_id: 'POI_ID4', poi_name: 'Internation Business Park', totalUser: 250, address: 'Green Park. Reading'},
+  { latitude: 51.4291, longitude:-.9751, poi_id: 'POI_ID5', poi_name: 'New Place', totalUser: 250, address: 'New Place, Reading'}
+]
