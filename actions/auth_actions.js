@@ -63,7 +63,7 @@ const doFacebookLogin = async (dispatch, callback) => {
   let result = await Facebook.logInWithReadPermissionsAsync('2054606067899136', { permissions: ['public_profile', 'email', 'user_birthday', 'user_hometown'] } );
 
   //console.log('*** auth_action.js doFacebookLogin FB authentication : ', result);
-  let { type, token } = result;
+  let { type, token, expires } = result;
 
   dispatch({ type: FACEBOOK_LOGIN_TOKEN, payload: token });
 
@@ -91,11 +91,8 @@ const doFacebookLogin = async (dispatch, callback) => {
 	    "email":email,
 	    "gender":gender,
 	    "birthDate":birthday,
-	    "zoneInfo":"zone info",
-	    "locale":"locale 1",
-	    "phoneNumber":"12345",
-	    "address":"Address 1",
-	    "updatedAt":"2017-09-12 23:45:00"
+	    "fbToken": token,
+      "fbTokenExpiryDttm": expires
     };
 
     let createUserResponse = await axios.post(createUserURL, createUserFBData);
@@ -103,8 +100,9 @@ const doFacebookLogin = async (dispatch, callback) => {
     //this can be used by profile screen
     dispatch({ type: USER_DETAILS, payload: createUserResponse.data });
     const { age } = createUserResponse.data;
-    console.log('***** auth_actions.js createUserResponse: ', createUserResponse.data);
-    console.log('age :', age);
+    //console.log('***** auth_actions.js createUserFBData: ', createUserFBData.data);
+    //console.log('***** auth_actions.js createUserResponse: ', createUserResponse.data);
+    //console.log('age :', age);
 
     /*
     AsyncStorage.removeItem('fb_token');

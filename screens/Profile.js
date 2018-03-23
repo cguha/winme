@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ( {auth} ) => {
-  console.log('*** Profile.js mapStateToProps auth: ', auth);
+  //console.log('*** Profile.js mapStateToProps auth: ', auth);
   const { fbToken, fbLoginID, userDetails } = auth;
   return { fbToken, fbLoginID, userDetails };
 };

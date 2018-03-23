@@ -17,7 +17,7 @@ export const getNearByLocationToConfirm = (userLoginSession, userCurrentLocation
   //console.log('*** userlocation_actions.js getNearByLocationToConfirm userCurrentLocation: ', userCurrentLocation);
 
   const googleAPIKey = 'AIzaSyAOGS2GwieA9bw8ZzNtJOgX5CYmi4qPDho';
-  const radius = 50;
+  const radius = 500; //in meters
   const {latitude, longitude} = userCurrentLocation.coords;
 
   const googleURL = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${latitude},${longitude}&radius=${radius}&key=${googleAPIKey}`;
@@ -63,13 +63,26 @@ export const confirmLocationByUser = (userLoginSession, userCurrentLocationConfi
   const nearByPlacesData = { "profileId": userLoginSession.fbLoginID };
   let nearByPlacesResponse = await axios.post(nearByPlacesURL, nearByPlacesData);
 
-  //console.log('userlocation_action.js nearByPlacesResponse: ', nearByPlacesResponse);
+  console.log('userlocation_action.js nearByPlacesResponse: ', nearByPlacesResponse);
   dispatch({ type: USER_NEARBY_PLACES, payload: nearByPlacesResponse.data.list });
   callbackToNBP();
 };
 
 
+export const getUserNearByPlaces = (userLoginSession) => async(dispatch) => {
+  const nearByPlacesURL = `http://ec2-34-245-2-151.eu-west-1.compute.amazonaws.com:8080/v1/users/nearbyplaces`;
+  const nearByPlacesData = { "profileId": userLoginSession.fbLoginID };
 
+  let nearByPlacesResponse = await axios.post(nearByPlacesURL, nearByPlacesData);
+  //console.log('************* userlocation_action.js getUserNearByPlaces: ', nearByPlacesResponse);
+  //console.log('************* userlocation_action.js place: ', nearByPlacesResponse.data.list[0]);
+
+  //console.log('************* userlocation_action.js userCurrentLocation: ', nearByPlacesResponse.data.userCurrentLocation);
+  //dispatch({ type: USER_NEARBY_PLACES, payload: nearByPlacesResponse.data.list[0] });
+  dispatch({ type: USER_NEARBY_PLACES, payload: nearByPlacesResponse.data });
+
+  //dispatch({ type: GOOGLE_LOCATION_API_CALL_REQUIRED, payload: 'N' });
+};
 
 //get users current location from phones gps.
 //if user's current location is present (latlon API) then get near by places (nearbyplaces API)
@@ -111,7 +124,7 @@ const getNearByPlaces = async (dispatch, position, userLoginSession, callbackToL
     const nearByPlacesData = { "profileId": userLoginSession.fbLoginID };
 
     let nearByPlacesResponse = await axios.post(nearByPlacesURL, nearByPlacesData);
-    console.log('userlocation_action.js nearByPlacesResponse: ', nearByPlacesResponse);
+    //console.log('userlocation_action.js nearByPlacesResponse: ', nearByPlacesResponse);
     dispatch({ type: USER_NEARBY_PLACES, payload: nearByPlacesResponse.data.list });
     dispatch({ type: GOOGLE_LOCATION_API_CALL_REQUIRED, payload: 'N' });
 

@@ -22,8 +22,8 @@ class Login extends Component {
 
   validateLogin = () => {
     //console.log('################# Facebookbutton pressed');
-    //this.props.facebookLogin(() => { this.props.navigation.navigate('NearByPlacesStack') });
-    this.props.facebookLogin(() => { this.props.navigation.navigate('TabsStack') });
+    this.props.facebookLogin(() => { this.props.navigation.navigate('NearByPlacesStack') });
+    //this.props.facebookLogin(() => { this.props.navigation.navigate('TabsStack') });
   };
 
   RemoveFBToken = () => {

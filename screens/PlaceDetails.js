@@ -23,25 +23,6 @@ class PlaceDetails extends Component {
     );
   };
 
-/*
-  renderUsersAtThisPlace = () => {
-    return this.props.usersAtSelectedPlace.map( (user) => {
-      return (
-        <TouchableHighlight key={user.profileId} onPress={ () => this.goToUserDetails(user) } >
-          <ListItem
-            wrapperStyle={ {backgroundColor: "yellow", height: 35} }
-            roundAvatar
-            hideChevron={true}
-            rightTitle={user.gender}
-            avatar={{uri: user.profileId}}
-            title={user.name}
-            subtitle={user.familyName}
-          />
-        </TouchableHighlight>
-      );
-    })
-  };
-*/
 
   renderSeperator = () => {
     return(
@@ -123,7 +104,7 @@ const styles = StyleSheet.create({
 
 
 const mapStateToProps = ( { place }) => {
-  console.log('PlaceDetails mapStateToProps place: ', place)
+  //console.log('PlaceDetails mapStateToProps place: ', place)
   const { usersAtSelectedPlace, selectedPlaceDetails } = place;
   return { usersAtSelectedPlace, selectedPlaceDetails};
 };

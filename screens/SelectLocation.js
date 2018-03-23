@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableHighlight, Modal, FlatList } from 'react-native';
 import { List, ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
-import { confirmLocationByUser, getNearByLocationToConfirm, googleAPICallRequiredManage } from '../actions';
+import { confirmLocationByUser, getNearByLocationToConfirm, googleAPICallRequiredManage, nearByPlacesRefreshManage } from '../actions';
 
 class SelectLocation extends Component {
 
@@ -14,6 +14,10 @@ class SelectLocation extends Component {
     if (this.props.userLoginSession && this.props.googleAPICallRequired === 'Y' && this.props.userCurrentLocation) {
       console.log('SelectLocation.js componentWillMount');
       this.getNearByLocations(this.props.userLoginSession, this.props.userCurrentLocation);
+    }
+    console.log('#### SelectLocation.js componentWillMount');
+    if (this.props.navigation.state.params) {
+      this.getNearByLocations(this.props.navigation.state.params.userLoginSession, this.props.navigation.state.params.currentPosition);
     }
   };
 
@@ -39,7 +43,7 @@ class SelectLocation extends Component {
   }
 
   getNearByLocations = (userLoginSession, userCurrentLocation) => {
-    console.log('SelectLocation.js getNearByLocations is called with: ', userCurrentLocation);
+    //console.log('SelectLocation.js getNearByLocations is called with: ', userCurrentLocation);
     this.setState({showPlace: true});
     this.props.getNearByLocationToConfirm(userLoginSession, userCurrentLocation);
     this.props.googleAPICallRequiredManage('N');
@@ -92,7 +96,14 @@ class SelectLocation extends Component {
     );
   }
 
+  fnConfirmLocation = (place) => {
+    this.setState({showPlace: false});
+    this.props.confirmLocationByUser(this.props.userLoginSession, place, () => { this.props.navigation.navigate('NearByPlacesStack') });
+    this.props.nearByPlacesRefreshManage('Y');
+  };
+
   render() {
+    console.log('render of Modal');
     return (
       <Modal visible={this.state.showPlace} animationType="slide" presentationStyle="fullScreen" >
         <List containerStyle={ styles.listContainerStyle }>
@@ -100,10 +111,14 @@ class SelectLocation extends Component {
             data={this.props.userNearByPlacesToConfirm}
             renderItem={ ({item}) => (
               <TouchableHighlight key={item.place_id}
+                ///*
                 onPress={() => {
                   this.setState({showPlace: false});
                   this.props.confirmLocationByUser(this.props.userLoginSession, item, () => { this.props.navigation.navigate('NearByPlacesStack') });
+                  this.props.nearByPlacesRefreshManage('Y');
                 }}
+                //*/
+                //onPress={this.fnConfirmLocation(item)}
               >
                 <ListItem
                   containerStyle={{ borderBottomWidth: 0, borderWidth: 0, height: 50, marginTop: 0, marginBottom: 0 }}
@@ -207,11 +222,12 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ( { auth, location }) => {
-  console.log('**** SelectLocation mapStateToProps SelectLocation location: ', location);
-  console.log('*** SelectLocation mapStateToProps auth: ', auth);
+  //console.log('**** SelectLocation mapStateToProps SelectLocation location: ', location);
+  //console.log('*** SelectLocation mapStateToProps auth: ', auth);
   const { userLoginSession } = auth;
   const { userCurrentLocation, userNearByPlacesToConfirm, googleAPICallRequired } = location
   return { userLoginSession, userCurrentLocation, userNearByPlacesToConfirm, googleAPICallRequired };
 };
 
-export default connect(mapStateToProps, { confirmLocationByUser, getNearByLocationToConfirm, googleAPICallRequiredManage })(SelectLocation);
+export default connect(mapStateToProps, {
+  confirmLocationByUser, getNearByLocationToConfirm, googleAPICallRequiredManage, nearByPlacesRefreshManage })(SelectLocation);
