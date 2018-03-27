@@ -11,42 +11,32 @@ class SelectLocation extends Component {
   };
 
   componentWillMount() {
-    if (this.props.userLoginSession && this.props.googleAPICallRequired === 'Y' && this.props.userCurrentLocation) {
-      console.log('SelectLocation.js componentWillMount');
-      this.getNearByLocations(this.props.userLoginSession, this.props.userCurrentLocation);
-    }
-    console.log('#### SelectLocation.js componentWillMount');
-    if (this.props.navigation.state.params) {
-      this.getNearByLocations(this.props.navigation.state.params.userLoginSession, this.props.navigation.state.params.currentPosition);
+    console.log('*** 6. SelectLocation componentWillMount userCurrentLocationByPhone : ', this.props.userCurrentLocationByPhone);
+    if (this.props.userCurrentLocationByPhone) {
+      this.getNearByLocations(this.props.userLoginSession, this.props.userCurrentLocationByPhone);
     }
   };
 
-  //I assume userLoginSession will be present by this time
-  componentWillReceiveProps(nextProps) {
-    if (this.props.userCurrentLocation) {
-      userCurrentLocation = this.props.userCurrentLocation;
-    }
-
-    if (nextProps.userCurrentLocation) {
-      userCurrentLocation = nextProps.userCurrentLocation;
-    }
-
-    if (nextProps.googleAPICallRequired === 'Y' && this.props.googleAPICallRequired === 'N') {
-      console.log('SelectLocation.js componentWillReceiveProps..');
-      this.getNearByLocations(this.props.userLoginSession, userCurrentLocation);
-      /*
-      this.setState({showPlace: true});
-      this.props.getNearByLocationToConfirm(nextProps.fbLoginID, nextProps.userCurrentLocation);
-      this.props.googleAPICallRequiredManage('N');
-      */
-    };
+  componentWillUnmount() {
+    console.log('*** 11A. SelectLocation componentWillUnmount');
+    this.setState({showPlace: false});
   }
 
-  getNearByLocations = (userLoginSession, userCurrentLocation) => {
-    //console.log('SelectLocation.js getNearByLocations is called with: ', userCurrentLocation);
+
+  //I assume userLoginSession will be present by this time
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.userCurrentLocationByPhone != this.props.userCurrentLocationByPhone) {
+      console.log('*** 7. SelectLocation componentWillReceiveProps userCurrentLocationByPhone : ', this.props.userCurrentLocationByPhone);
+      this.getNearByLocations(this.props.userLoginSession, nextProps.userCurrentLocationByPhone);
+    }
+  }
+
+
+  getNearByLocations = (userLoginSession, userCurrentLocationByPhone) => {
+    console.log('*** 7A. SelectLocation calls getNearByLocationToConfirm with currentPositionByPhone : ', userCurrentLocationByPhone);
     this.setState({showPlace: true});
-    this.props.getNearByLocationToConfirm(userLoginSession, userCurrentLocation);
-    this.props.googleAPICallRequiredManage('N');
+    this.props.getNearByLocationToConfirm(userLoginSession, userCurrentLocationByPhone);
+    //this.props.googleAPICallRequiredManage('N');
   };
 
 
@@ -70,22 +60,16 @@ class SelectLocation extends Component {
       <View style={styles.footerViewStyle}>
         <TouchableHighlight style={styles.buttonStyle}
           onPress={ () => {
-            item = {
-              icon: 'dummy_icon',
-              id: 'dummy_id',
-              name: 'unknown name',
-              place_id: 'UNKNOWN',
-              rating: 0,
+            item = { icon: 'dummy_icon', id: 'dummy_id', name: 'unknown name', place_id: 'UNKNOWN', rating: 0,
               geometry: {
                 location: {
-                  lat: this.props.userCurrentLocation.coords.latitude,
-                  lng: this.props.userCurrentLocation.coords.longitude
+                  lat: this.props.userCurrentLocationByPhone.coords.latitude,
+                  lng: this.props.userCurrentLocationByPhone.coords.longitude
                 }
               },
               types: ['dummy_types']
             };
-            this.setState({showPlace: false});
-            this.props.confirmLocationByUser(this.props.userLoginSession, item, () => { this.props.navigation.navigate('NearByPlacesStack') });
+            this.fnConfirmLocation(item);
           }}
         >
           <View style={styles.viewButton}>
@@ -97,15 +81,15 @@ class SelectLocation extends Component {
   }
 
   fnConfirmLocation = (place) => {
+    console.log('*** 11. SelectLocation (CB to NBP) calls confirmLocationByUser : ', place);
     this.setState({showPlace: false});
     this.props.confirmLocationByUser(this.props.userLoginSession, place, () => { this.props.navigation.navigate('NearByPlacesStack') });
     this.props.nearByPlacesRefreshManage('Y');
   };
 
-  render() {
-    console.log('render of Modal');
+
+  renderData = () => {
     return (
-      <Modal visible={this.state.showPlace} animationType="slide" presentationStyle="fullScreen" >
         <List containerStyle={ styles.listContainerStyle }>
           <FlatList
             data={this.props.userNearByPlacesToConfirm}
@@ -113,12 +97,8 @@ class SelectLocation extends Component {
               <TouchableHighlight key={item.place_id}
                 ///*
                 onPress={() => {
-                  this.setState({showPlace: false});
-                  this.props.confirmLocationByUser(this.props.userLoginSession, item, () => { this.props.navigation.navigate('NearByPlacesStack') });
-                  this.props.nearByPlacesRefreshManage('Y');
+                  this.fnConfirmLocation(item);
                 }}
-                //*/
-                //onPress={this.fnConfirmLocation(item)}
               >
                 <ListItem
                   containerStyle={{ borderBottomWidth: 0, borderWidth: 0, height: 50, marginTop: 0, marginBottom: 0 }}
@@ -145,10 +125,25 @@ class SelectLocation extends Component {
 
           />
         </List>
+    );
+  }
+
+  render() {
+    console.log('*** 10. SelectLocation render with Google response : ', this.props.userNearByPlacesToConfirm);
+    return(
+      <Modal visible={this.state.showPlace} animationType="slide" presentationStyle="fullScreen"
+        onDismiss={ () => {
+          console.log('*** 11A. Modal is closed');
+          this.setState( {showPlace: false} );
+        }}
+      >
+        {this.renderData()}
       </Modal>
     );
   }
-};
+
+
+};//end of SelectLocation class
 
 
 const styles = StyleSheet.create({
@@ -225,9 +220,9 @@ const mapStateToProps = ( { auth, location }) => {
   //console.log('**** SelectLocation mapStateToProps SelectLocation location: ', location);
   //console.log('*** SelectLocation mapStateToProps auth: ', auth);
   const { userLoginSession } = auth;
-  const { userCurrentLocation, userNearByPlacesToConfirm, googleAPICallRequired } = location
-  return { userLoginSession, userCurrentLocation, userNearByPlacesToConfirm, googleAPICallRequired };
+  const { userCurrentLocationByPhone, userNearByPlacesToConfirm } = location
+  return { userLoginSession, userCurrentLocationByPhone, userNearByPlacesToConfirm };
 };
 
 export default connect(mapStateToProps, {
-  confirmLocationByUser, getNearByLocationToConfirm, googleAPICallRequiredManage, nearByPlacesRefreshManage })(SelectLocation);
+  confirmLocationByUser, getNearByLocationToConfirm , nearByPlacesRefreshManage })(SelectLocation);

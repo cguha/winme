@@ -40,18 +40,8 @@ export const showAgeChange = (value) => {
   );
 };
 
-export const saveSettings = ({ distance, age, searchG, showMe, showAge, userLoginSession}, callbackToNearByPlaces) => async(dispatch) => {
-  if (showMe) {
-    showMeFlag = 'Y'
-  } else {
-    showMeFlag = 'N'
-  }
+export const saveSettings = ({distance, age, searchGender, searchG, showMe, showMeFlag, showAge, showAgeFlag, userLoginSession}, callbackToNearByPlaces) => async(dispatch) => {
 
-  if (showAge) {
-    showAgeFlag = 'Y';
-  } else {
-    showAgeFlag = 'N';
-  }
 
   const settingsURL = 'http://ec2-34-245-2-151.eu-west-1.compute.amazonaws.com:8080/v1/users/settings';
   let settingsData = {
@@ -65,16 +55,27 @@ export const saveSettings = ({ distance, age, searchG, showMe, showAge, userLogi
     "showAge": showAgeFlag
   };
 
+  /*
   let responseSettings = await axios.post(settingsURL, settingsData);
-
+  console.log('*** 16. Step 3 should appear next. responseSettings: ', responseSettings);
   dispatch({type: SETTINGS_SUCCESS, payload: responseSettings.data});
   callbackToNearByPlaces();
+  */
+
+  let responseSettings = await axios.post(settingsURL, settingsData)
+    .then( response => {
+      console.log('***### 16. Step 3 should appear next. response: ', response);
+      dispatch({type: SETTINGS_SUCCESS, payload: response.data});
+      dispatch({ type: NEARBY_PLACES_REFRESH_REQUIRED, payload: 'Y' });
+      callbackToNearByPlaces();
+    });
+
 
 };
 
 //this is called to get users current settings
-export const getUserSettings = (fbProfileId, fbToken) => async(dispatch) => {
-  const userSettingsURL = `http://ec2-34-245-2-151.eu-west-1.compute.amazonaws.com:8080/v1/users/${fbProfileId}/settings`;
+export const getUserSettings = (userLoginSession) => async(dispatch) => {
+  const userSettingsURL = `http://ec2-34-245-2-151.eu-west-1.compute.amazonaws.com:8080/v1/users/${userLoginSession.fbLoginID}/settings`;
   let userSettingResponse = await axios.get(userSettingsURL);
   //console.log('######### userSettingResponse settings_action.js: ', userSettingResponse.data);
   dispatch({type: SETTINGS_SUCCESS, payload: userSettingResponse.data});

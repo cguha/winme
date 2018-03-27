@@ -24,12 +24,13 @@ class Settings extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.userLoginSession !== this.props.userLoginSession) {
       console.log('Settings.js componentWillReceiveProps userLoginSession: ', nextProps.userLoginSession);
-      this.getUserSettings(this.props.userLoginSession);
+      this.getUserSettings(nextProps.userLoginSession);
     }
   };
 
   getUserSettings = (userLoginSession) => {
-    this.props.getUserSettings(userLoginSession.fbLoginID, userLoginSession.fbToken);
+    //console.log('*** Settings.js userLoginSession: ', userLoginSession);
+    this.props.getUserSettings(userLoginSession);
   };
 
   /*
@@ -49,6 +50,7 @@ class Settings extends Component {
   */
 
   saveButtonPressed = () => {
+
     const { distance, age, searchGender, showMe, showAge, userLoginSession } = this.props;
     if (this.props.searchGender === 0) {
       searchG = 'M';
@@ -62,11 +64,25 @@ class Settings extends Component {
       searchG = 'B';
     }
 
+    if (this.props.showMe) {
+      showMeFlag = 'Y'
+    } else {
+      showMeFlag = 'N'
+    }
+
+    if (this.props.showAge) {
+      showAgeFlag = 'Y';
+    } else {
+      showAgeFlag = 'N';
+    }
+
+    console.log('*** 15. saveButtonPressed. Call refresh NBP as well as CB');
+
     this.props.saveSettings(
-      {distance, age, searchG, showMe, showAge, userLoginSession},
+      {distance, age, searchGender, searchG, showMe, showMeFlag, showAge, showAgeFlag, userLoginSession},
       () => {this.props.navigation.navigate('NearByPlacesStack')}
     );
-    this.props.nearByPlacesRefreshManage('Y');
+    //this.props.nearByPlacesRefreshManage('Y');
   }
 
   logoutButtonPressed = () => {

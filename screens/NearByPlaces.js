@@ -4,7 +4,7 @@ import { Icon } from 'react-native-elements';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
 import { connect } from 'react-redux';
 import MapCallout from '../components/MapCallout';
-import { getUserCurrentLocation, getUserNearByPlaces, getUsersAtSelectedPlace, nearByPlacesRefreshManage } from '../actions';
+import { getUserCurrentLocationByPhone, getUserNearByPlaces, getUsersAtSelectedPlace, nearByPlacesRefreshManage } from '../actions';
 
 //myLat:51.4182, myLon: -.9463
 
@@ -17,7 +17,7 @@ class NearByPlaces extends Component {
 
   componentWillMount() {
     if (this.props.userLoginSession && this.props.nearByPlaceRefreshRequired === 'Y') {
-      console.log('NearByPlaces.js componentWillMount calling..: ', this.props.userLoginSession.fbLoginID)
+      console.log('*** 2. NearByPlaces.js componentWillMount call refresh: ', this.props.userLoginSession.fbLoginID)
       this.refreshNearByPlaces(this.props.userLoginSession);
     };
   }
@@ -40,18 +40,12 @@ class NearByPlaces extends Component {
     };
 
     if (callRefreshFlag === 'Y') {
-      console.log('NearByPlaces.js componentWillReceiveProps calling ....: ', userLoginSession.fbLoginID);
+      console.log('*** NearByPlaces.js componentWillReceiveProps call refresh: ', userLoginSession.fbLoginID);
       this.refreshNearByPlaces(userLoginSession);
     }
 
   }
 
-  /*
-  refreshNearByPlaces = (userLoginSession) => {
-    this.props.getUserCurrentLocation(userLoginSession, () => { this.props.navigation.navigate('SelectLocation') });
-    this.props.nearByPlacesRefreshManage('N');
-  }
-  */
   refreshNearByPlaces = (userLoginSession) => {
     this.props.getUserNearByPlaces(userLoginSession);
     this.props.nearByPlacesRefreshManage('N');
@@ -61,21 +55,19 @@ class NearByPlaces extends Component {
     this.props.getUsersAtSelectedPlace(place, () => { this.props.navigation.navigate('PlaceDetails') } );
   };
 
+  //this is called when the floating button is pressed
   showPlacesToChoose = () => {
-    console.log('showPlacesToChoose: ');
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        this.props.navigation.navigate('SelectLocation', {currentPosition: position, userLoginSession: this.props.userLoginSession });
-      },
-      (error) => { console.log(error)
-      },
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
-    );
+    this.props.getUserCurrentLocationByPhone( () => { this.props.navigation.navigate('SelectLocation') } );
   }
 
-  renderPlaceMarker = (userLastLatitude, userLastLongitude) => {
-    return this.props.userNearByPlaces.list[0].map((place) => {
+  renderPlaceMarker = (userLastLatitude, userLastLongitude, userCurrentLocation) => {
+    let userNearByPlacesArray = this.props.userNearByPlaces.list[0];
+    userNearByPlacesArray.push({poiId: "Unknown", poiName: userCurrentLocation.poiName, poiLatitude: userLastLatitude, poiLongitude: userLastLongitude });
+
+    return userNearByPlacesArray.map((place, index) => {
       //console.log('place: ', place);
+      //console.log('userCurrentLocation: ', userCurrentLocation);
+      //console.log('index: '+ index);
       let { poiLatitude, poiLongitude } = place;
 
       let pinColor = "orangered";
@@ -83,11 +75,8 @@ class NearByPlaces extends Component {
         pinColor = "blue";
       }
 
-      let latitude = place.poiLatitude;
-      let longitude = place.poiLongitude;
-
       return (
-        <Marker key={place.poiId} coordinate={ {latitude, longitude} } title={place.poiName} pinColor={pinColor}>
+        <Marker key={index} coordinate={ {latitude: poiLatitude, longitude: poiLongitude} } pinColor={pinColor}>
           <Callout tooltip style={styles.calloutStyle}>
             <MapCallout
               title={place.poiName}
@@ -100,31 +89,16 @@ class NearByPlaces extends Component {
     })
   }
 
+  //22.4583792, 88.3788021 - Mainak Gardens
+  //Home: 51.4180817, -0.9490554
+  //Tesco Uxbridge: 51.5477631, -0.4838688
+
   renderMap = () => {
-    //console.log('this.props.userCurrentLocation:' , this.props.userCurrentLocation)
-    /*
-    if (this.props.userCurrentLocation && this.props.userNearByPlaces) {
-      const { latitude, longitude } = this.props.userCurrentLocation.coords;
-      return (
-        <MapView
-          initialRegion={ {latitude: latitude, longitude: longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421  } }
-          showsUserLocation
-          style={styles.viewStyle} mapType='hybrid'
-        >
-          {this.renderPlaceMarker()}
-        </MapView>
-      );
-    } else {
-      return (
-        <View><Text>No Map</Text></View>
-      );
-    }
-    */
-    //console.log('LATITUDE_DELTA' + LATITUDE_DELTA);
-    //console.log('LONGITUDE_DELTA' + LONGITUDE_DELTA);
     if (this.props.userNearByPlaces) {
-      //console.log('this.props.userNearByPlaces: ', this.props.userNearByPlaces[0]);
+      console.log('*** 4. NBP renders places : ', this.props.userNearByPlaces);
       const { latitude, longitude } = this.props.userNearByPlaces.userCurrentLocation;
+      let initialRegion = { latitude: latitude, longitude: longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA  } ;
+      let region = { latitude: latitude, longitude: longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA  };
       return (
         <MapView
           style={styles.viewStyle}
@@ -133,12 +107,15 @@ class NearByPlaces extends Component {
           //zoomEnabled={true}
           //customMapStyle={ [zoom = 20] }
           //minZoomLevel={20}
-          initialRegion={ {latitude: latitude, longitude: longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA  } }
+          //initialRegion={ {latitude: latitude, longitude: longitude, latitudeDelta: LATITUDE_DELTA, longitudeDelta: LONGITUDE_DELTA  } }
+          initialRegion= { initialRegion }
+          region = { region }
           //initialRegion={ {latitude: poiLatitude, longitude: poiLongitude, latitudeDelta: 50, longitudeDelta: 50  } }
           //showsUserLocation
+          //followsUserLocation={true}
           mapType='hybrid'
         >
-          {this.renderPlaceMarker(latitude, longitude)}
+          {this.renderPlaceMarker(latitude, longitude, this.props.userNearByPlaces.userCurrentLocation)}
         </MapView>
       );
     } else {
@@ -156,7 +133,7 @@ class NearByPlaces extends Component {
         <View style={styles.viewButton}>
           <Icon
             raised
-            color="grey"
+            color="maroon"
             reverse
             name='my-location'
             type="MaterialIcons"
@@ -192,11 +169,11 @@ const styles = {
 }
 
 const mapStateToProps = ( { location, auth }) => {
-  //console.log('NearByPlaces mapStateToProps location: ', location);
+  //console.log('*** NearByPlaces mapStateToProps location: ', location);
   //console.log('NearByPlaces mapStateToProps auth: ', auth);
-  const { userCurrentLocation, userNearByPlaces, nearByPlaceRefreshRequired } = location
   const { userLoginSession } = auth;
-  return { userLoginSession, userCurrentLocation, userNearByPlaces,  nearByPlaceRefreshRequired };
+  const { userCurrentLocationByPhone, userNearByPlaces, nearByPlaceRefreshRequired } = location
+  return { userLoginSession, userCurrentLocationByPhone, userNearByPlaces,  nearByPlaceRefreshRequired };
 };
 
-export default connect(mapStateToProps, { getUserCurrentLocation, getUserNearByPlaces, getUsersAtSelectedPlace, nearByPlacesRefreshManage })(NearByPlaces);
+export default connect(mapStateToProps, { getUserCurrentLocationByPhone, getUserNearByPlaces, getUsersAtSelectedPlace, nearByPlacesRefreshManage })(NearByPlaces);

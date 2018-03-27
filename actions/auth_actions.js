@@ -19,8 +19,9 @@ const FB_PROFILE_URL = 'https://graph.facebook.com/v2.11/me?fields=id,picture,na
 export const facebookLogin = (callback) => async (dispatch) => {
   let token = await AsyncStorage.getItem('fb_token');
   let fb_user_id = await AsyncStorage.getItem('fb_user_id');
+  let fbTokenExpiry = await AsyncStorage.getItem('fbTokenExpiry');
   //console.log('auth_action.js facebookLogin: ' + token + ', fb_user_id: ' + fb_user_id);
-  console.log('auth_action.js facebookLogin: fb_user_id: ' + fb_user_id);
+  //console.log('auth_action.js facebookLogin: fb_user_id: ' + fb_user_id);
 
   let name = await AsyncStorage.getItem('firstName');
   let familyName = await AsyncStorage.getItem('lastName');
@@ -44,9 +45,12 @@ export const facebookLogin = (callback) => async (dispatch) => {
 
 
   if (token) {
-    dispatch({ type: FACEBOOK_LOGIN_TOKEN, payload: token });
-    dispatch({ type: FACEBOOK_LOGIN_ID, payload: fb_user_id });
-    dispatch({ type: USER_LOGIN_SESSION, payload: {fbToken: token, fbLoginID: fb_user_id} });
+    //dispatch({ type: FACEBOOK_LOGIN_TOKEN, payload: token });
+    //dispatch({ type: FACEBOOK_LOGIN_ID, payload: fb_user_id });
+
+    let userLoginSession = {fbToken: token, fbLoginID: fb_user_id, fbTokenExpiry: fbTokenExpiry};
+    console.log('*** 1. auth_action.js facebookLogin: userLoginSession: ', userLoginSession);
+    dispatch({ type: USER_LOGIN_SESSION, payload: userLoginSession });
     dispatch({ type: USER_DETAILS, payload: userDetails });
 
     if (callback) {
@@ -65,7 +69,7 @@ const doFacebookLogin = async (dispatch, callback) => {
   //console.log('*** auth_action.js doFacebookLogin FB authentication : ', result);
   let { type, token, expires } = result;
 
-  dispatch({ type: FACEBOOK_LOGIN_TOKEN, payload: token });
+  //dispatch({ type: FACEBOOK_LOGIN_TOKEN, payload: token });
 
   if (type === 'cancel') {
     return dispatch({ type: FACEBOOK_LOGIN_FAIL });
@@ -77,8 +81,8 @@ const doFacebookLogin = async (dispatch, callback) => {
 
     const {id, first_name, last_name, gender, email, birthday } = responseFB.data;
     //dispatch({ type: FACEBOOK_USER_DETAILS, payload: responseFB.data});
-    dispatch({ type: FACEBOOK_LOGIN_ID, payload: id });
-    dispatch({ type: USER_LOGIN_SESSION, payload: {fbToken: token, fbLoginID: id} });
+    //dispatch({ type: FACEBOOK_LOGIN_ID, payload: id });
+    dispatch({ type: USER_LOGIN_SESSION, payload: {fbToken: token, fbLoginID: id, fbTokenExpiry: expires} });
 
     //create user using FB user data
     const createUserURL = 'http://ec2-34-245-2-151.eu-west-1.compute.amazonaws.com:8080/v1/users';
@@ -97,7 +101,7 @@ const doFacebookLogin = async (dispatch, callback) => {
 
     let createUserResponse = await axios.post(createUserURL, createUserFBData);
     //console.log('auth_actions.js createUserResponse: ', createUserResponse);
-    //this can be used by profile screen
+
     dispatch({ type: USER_DETAILS, payload: createUserResponse.data });
     const { age } = createUserResponse.data;
     //console.log('***** auth_actions.js createUserFBData: ', createUserFBData.data);
@@ -111,6 +115,7 @@ const doFacebookLogin = async (dispatch, callback) => {
 
     await AsyncStorage.setItem('fb_token', token);
     await AsyncStorage.setItem('fb_user_id', id );
+    await AsyncStorage.setItem('fbTokenExpiry', expires.toString() );
 
     ///*
     await AsyncStorage.setItem('firstName', first_name );

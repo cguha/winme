@@ -10,13 +10,14 @@ import PlaceDetails from '../screens/PlaceDetails';
 import UserDetails from '../screens/UserDetails';
 import Auth from '../screens/Auth';
 import SelectLocation from '../screens/SelectLocation';
+import Interests from '../screens/Interests';
 
 
 export const NearByPlacesStack = StackNavigator(
   {
-    NearByPlaces: { screen: NearByPlaces, navigationOptions: { title: 'Places'} },
-    PlaceDetails: { screen: PlaceDetails, navigationOptions: { title: 'Place Details'}},
-    UserDetails: { screen: UserDetails, navigationOptions: { title: 'User Details'}}
+    NearByPlaces: { screen: NearByPlaces, navigationOptions: { title: 'People', headerTitle: 'People Around You'} },
+    PlaceDetails: { screen: PlaceDetails, navigationOptions: { title: 'People', headerTitle: 'Place'}},
+    UserDetails: { screen: UserDetails, navigationOptions: { title: 'People', headerTitle: 'User'}}
   },
   { headerMode: 'screen'}
 );
@@ -30,7 +31,11 @@ export const TopCrowdedPlacesStack = StackNavigator(
 );
 
 export const ProfileStack = StackNavigator(
-  { Profile: { screen: Profile, navigationOptions: { title: 'Profile'} } }, { headerMode: 'screen'}
+  {
+    Profile: { screen: Profile, navigationOptions: { title: 'Profile'} },
+    Interests: { screen: Interests, navigationOptions: { title: 'Profile', headerTitle: 'Interests'} }
+  },
+  { headerMode: 'screen'}
 );
 
 export const TabsStack = TabNavigator(
