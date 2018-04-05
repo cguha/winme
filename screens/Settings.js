@@ -6,8 +6,11 @@ import Container from '../components/Container';
 import {
   searchGenderChange,
   ageChange,
-  distanceChange, showMeChange, showAgeChange, getUserSettings, saveSettings,
-  nearByPlacesRefreshManage
+  distanceChange, showMeChange,
+  showAgeChange,
+  getUserSettings, saveSettings,
+  nearByPlacesRefreshManage,
+  primaryInterestChange
 } from '../actions';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -16,14 +19,14 @@ class Settings extends Component {
 
   componentWillMount() {
     if (this.props.userLoginSession) {
-      console.log('Settings.js componentWillMount userLoginSession: ', this.props.userLoginSession);
+      //console.log('Settings.js componentWillMount userLoginSession: ', this.props.userLoginSession);
       this.getUserSettings(this.props.userLoginSession);
     }
   };
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.userLoginSession !== this.props.userLoginSession) {
-      console.log('Settings.js componentWillReceiveProps userLoginSession: ', nextProps.userLoginSession);
+      //console.log('Settings.js componentWillReceiveProps userLoginSession: ', nextProps.userLoginSession);
       this.getUserSettings(nextProps.userLoginSession);
     }
   };
@@ -120,7 +123,15 @@ class Settings extends Component {
   }
 
 
-  //state = { index: 2 }
+  primaryInterestChange = () => {
+    this.props.primaryInterestChange(value);
+    console.log('primaryInterestChange change');
+  };
+
+  showInterestScreen = () => {
+    console.log('Settings show interest');
+    this.props.navigation.navigate('Interests');
+  };
 
   render() {
 
@@ -163,6 +174,18 @@ class Settings extends Component {
                 value={this.props.distance}
                 onValueChange={this.distanceChange.bind(this)}
               />
+            </View>
+        </View>
+
+        <View style={styles.cardSectionStyle}>
+            <View style={styles.labelStyle}>
+              <Text style={styles.textStyle}>Interest:</Text>
+            </View>
+
+            <View style={styles.dataStyle}>
+              <TouchableOpacity style={ [styles.buttonStyle, {alignItems: 'flex-end'} ]} onPress={this.showInterestScreen} >
+                <Text style={styles.dataText}>{this.props.primaryInterest.name}    > </Text>
+              </TouchableOpacity>
             </View>
         </View>
 
@@ -302,14 +325,15 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = ( {settings, auth } ) => {
+const mapStateToProps = ( {settings, auth, profile } ) => {
   //console.log('*** Settings mapStateToProps settings: ', settings);
   //console.log('Settings mapStateToProps auth: ', auth);
-  const { searchGender, age, distance, showMe, showAge, saveSettings } = settings;
   const { userLoginSession } = auth;
-  return ( {userLoginSession, searchGender, age, distance, showMe, showAge, saveSettings });
+  const { searchGender, age, distance, showMe, showAge, saveSettings } = settings;
+  const { primaryInterest } = profile;
+  return ( {userLoginSession, searchGender, age, distance, showMe, showAge, saveSettings, primaryInterest });
 };
 
 export default connect(mapStateToProps,
   { searchGenderChange, ageChange, distanceChange, showMeChange, showAgeChange, getUserSettings,
-    saveSettings, nearByPlacesRefreshManage })(Settings);
+    saveSettings, nearByPlacesRefreshManage, primaryInterestChange })(Settings);

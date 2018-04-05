@@ -11,19 +11,27 @@ import UserDetails from '../screens/UserDetails';
 import Auth from '../screens/Auth';
 import SelectLocation from '../screens/SelectLocation';
 import Interests from '../screens/Interests';
+import DisplayPlaceReviews from '../screens/DisplayPlaceReviews';
+import CreatePlaceReviews from '../screens/CreatePlaceReviews';
 
 
 export const NearByPlacesStack = StackNavigator(
   {
     NearByPlaces: { screen: NearByPlaces, navigationOptions: { title: 'People', headerTitle: 'People Around You'} },
-    PlaceDetails: { screen: PlaceDetails, navigationOptions: { title: 'People', headerTitle: 'Place'}},
+    PlaceDetails: { screen: PlaceDetails, navigationOptions: { title: 'People', headerTitle: 'Place'} },
+    DisplayPlaceReviews: { screen: DisplayPlaceReviews, navigationOptions: { title: 'People', headerTitle: 'Place Reviews'} },
+    CreatePlaceReviews: { screen: CreatePlaceReviews, navigationOptions: { title: 'People', headerTitle: 'Provide Reviews'} },
     UserDetails: { screen: UserDetails, navigationOptions: { title: 'People', headerTitle: 'User'}}
   },
   { headerMode: 'screen'}
 );
 
 export const SettingsStack = StackNavigator(
-  { Settings: { screen: Settings, navigationOptions: { title: 'Settings'} } }, { headerMode: 'screen'}
+  {
+    Settings: { screen: Settings, navigationOptions: { title: 'Settings'} },
+    Interests: { screen: Interests, navigationOptions: { title: 'Settings', headerTitle: 'Interests'} }
+  },
+  { headerMode: 'screen'}
 );
 
 export const TopCrowdedPlacesStack = StackNavigator(

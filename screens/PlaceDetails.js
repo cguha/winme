@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { View, ScrollView, Text, Button, StyleSheet, TouchableHighlight, FlatList, ActivityIndicator } from 'react-native';
-import { List, ListItem } from 'react-native-elements';
+import { View, ScrollView, Text, Button, StyleSheet, TouchableHighlight, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { List, ListItem, Rating } from 'react-native-elements';
 import Container from '../components/Container';
 
 import { connect } from 'react-redux';
@@ -13,16 +13,50 @@ class PlaceDetails extends Component {
     this.props.navigation.navigate('UserDetails');
   }
 
+  displayPlaceReview = () => {
+    this.props.navigation.navigate('DisplayPlaceReviews');
+  }
+
+  createPlaceReview = () => {
+    this.props.navigation.navigate('CreatePlaceReviews');
+  }
+
   renderPlaceDetails = () => {
     return (
-      <View style={styles.placeViewStyle}>
-        <Text style={styles.textHeadingStyle}>{this.props.selectedPlaceDetails.poiName} ({this.props.selectedPlaceDetails.poiType})</Text>
-        <Text style={ styles.textNormalStyle }>{this.props.selectedPlaceDetails.poiAddress}</Text>
-        <Text style={ styles.textNormalStyle }>No of Users: {this.props.selectedPlaceDetails.totalUsers} </Text>
+      <View style={ {height: 50, flexDirection: 'row', borderWidth: 0, borderColor: 'red'} } >
+
+        <View style={{ borderWidth: 0, borderColor: 'green', width: "85%", backgroundColor: 'sandybrown', alignItems: 'center' }} >
+          <TouchableOpacity style={{alignItems: 'center', width: "100%", height: "100%"}} onPress={this.displayPlaceReview}>
+            <View style={{alignItems: 'center', width: "100%", height: "100%"}}>
+              <Text style={styles.textHeadingStyle}>{this.props.selectedPlaceDetails.poiName} ({this.props.selectedPlaceDetails.poiType})</Text>
+              <Text style={ styles.textNormalStyle }>No of Users: {this.props.selectedPlaceDetails.totalUsers} </Text>
+              <Rating
+                type="star"
+                fractions={1}
+                startingValue={4}
+                imageSize={12}
+                readonly
+                ratingColor={'#3498db'}
+                ratingBackgroundColor={'yellow'}
+                ratingCount={5}
+                style={{ borderWidth: 0, borderColor: 'green', height: 10, paddingVertical: 3 }}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        <View style={{ borderWidth: 0, borderColor: 'blue', width: "15%", backgroundColor: 'sandybrown', alignItems: 'center', justifyContent: 'center' }}>
+          <TouchableOpacity style={{borderWidth: 0, alignItems: 'center', justifyContent: 'center', width: "100%", height: "100%"}}
+           onPress={this.createPlaceReview}>
+            <View style={{alignItems: 'center', width: "100%"}}>
+              <Text style={{color: 'blue'}}>Review</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
       </View>
     );
   };
-
 
   renderSeperator = () => {
     return(

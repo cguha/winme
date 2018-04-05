@@ -16,8 +16,8 @@ class Profile extends Component {
   };
 
   showInterestScreen = () => {
-    console.log('show interest');
-    this.props.navigation.navigate('Interests');
+    console.log('Profile show interest');
+    this.props.navigation.navigate('Interests', {source: 'Profile'});
   };
 
   birthDateChange = (value) => {
@@ -53,6 +53,7 @@ class Profile extends Component {
             </View>
           </View>
 
+          <View style={styles.viewDivider} />
 
           {/*Date of Birth section */}
           <View style={ [styles.cardSectionStyle, {height: "30%", borderWidth: 0, paddingLeft: 0} ] }>
@@ -60,7 +61,7 @@ class Profile extends Component {
               <Text style={styles.labelText}>Date of Birth:</Text>
             </View>
 
-            <View style={{ height: 150, width: "100%", borderTopWidth: .5, borderLeftWidth: 0, borderRightWidth: 0}}>
+            <View style={{ height: 150, width: "100%", borderTopWidth: .25, borderLeftWidth: 0, borderRightWidth: 0}}>
               <DatePickerIOS
                 date={ this.props.birthDate }
                 onDateChange = {this.birthDateChange }
@@ -70,6 +71,7 @@ class Profile extends Component {
             </View>
           </View>
 
+          <View style={styles.viewDivider} />
 
           {/*About Me section */}
           <View style={ [styles.cardSectionStyle, { paddingLeft: 0, height: "20%"} ]} >
@@ -92,32 +94,23 @@ class Profile extends Component {
             </View>
           </View>
 
-          {/*Primary interest section
-          <View style={ [styles.cardSectionStyle, { paddingLeft: 0, width: "100%"} ]} >
-            <View style={{ width: "100%", borderWidth: 0, paddingLeft: 5, justifyContent: 'flex-start'}} >
-              <Text style={styles.labelText}>Primary Interest: </Text>
-            </View>
 
-            <View style={ [styles.viewButton, { paddingLeft: 0, width: "100%"} ]}>
-              <TouchableOpacity style={styles.buttonStyle} onPress={this.showInterestScreen} >
-                <Text style={styles.buttonText}>Select Interest {this.props.primaryInterest.name}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          */}
+          <View style={styles.viewDivider} />
 
-          <View style={ [styles.cardSectionStyle, { paddingLeft: 0, width: "100%", height: "5%"} ]} >
-            <View style={{ width: "100%", borderWidth: 0, paddingLeft: 0, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center'}} >
+          {/*Interest  section */}
+          <View style={ [styles.cardSectionStyle, { paddingLeft: 0, width: "100%", height: "10%"} ]} >
 
-              <View style={[styles.viewButton, { width: "20%", borderWidth: 0, paddingLeft: 5, borderRadius: 0, backgroundColor: "white"}]}>
+            <View style={{ width: "100%", borderWidth: 0, borderColor: "blue", paddingLeft: 0, flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end'}} >
+
+              <View style={[styles.viewButton, { width: "20%", borderWidth: 0, borderColor: "green", paddingLeft: 5, borderRadius: 0, backgroundColor: "white"}]}>
                 <TouchableOpacity style={styles.buttonStyle} onPress={this.showInterestScreen} >
                   <Text style={styles.labelText}>Interest: </Text>
                 </TouchableOpacity>
               </View>
 
-              <View style={ [styles.viewButton, {width: "80%", borderWidth: 0, borderRadius: 0, backgroundColor: "white"}]}>
-                <TouchableOpacity style={styles.buttonStyle} onPress={this.showInterestScreen} >
-                  <Text style={styles.buttonText}>{this.props.primaryInterest.name}</Text>
+              <View style={ [styles.viewButton, {width: "80%", borderWidth: 0, borderColor: "red", borderRadius: 0, backgroundColor: "white"}]}>
+                <TouchableOpacity style={ [styles.buttonStyle, {alignItems: 'flex-end'} ]} onPress={this.showInterestScreen} >
+                  <Text style={styles.dataText}>{this.props.primaryInterest.name}    > </Text>
                 </TouchableOpacity>
               </View>
 
@@ -125,11 +118,11 @@ class Profile extends Component {
 
           </View>
 
-
+          <View style={styles.viewDivider} />
           {/*Save button section */}
-          <View style={ [styles.cardSectionStyle, { width: "100%", paddingLeft: 0, height: "15%"} ]} >
-            <View style={styles.viewButton}>
-              <TouchableOpacity style={styles.buttonStyle} onPress={this.saveProfile} >
+          <View style={ [styles.cardSectionStyle, { width: "100%", paddingLeft: 0, height: "10%"} ]} >
+            <View style={ [styles.viewButton, {height: 35} ]}>
+              <TouchableOpacity style={ styles.buttonStyle} onPress={this.saveProfile} >
                 <Text style={styles.buttonText}>Save</Text>
               </TouchableOpacity>
             </View>
@@ -166,8 +159,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderColor: 'grey'
   },
-
-
+  viewDivider: {
+    borderWidth: .25,
+    borderColor: "firebrick",
+    height: .5,
+    width: "100%",
+    paddingLeft: 1,
+    paddingRight: 1
+  },
   imageStyle: {
     height: 100,
     //flex: 1,
@@ -191,9 +190,9 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   buttonText: {
-    fontSize: 12,
+    fontSize: 15,
     color: "white",
-    fontWeight: "normal",
+    fontWeight: "bold",
     fontStyle: "italic"
   },
   labelText: {
@@ -211,7 +210,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = ( {auth, profile} ) => {
-  console.log('*** Profile.js mapStateToProps auth: ', auth);
+  //console.log('*** Profile.js mapStateToProps auth: ', auth);
   console.log('*** Profile.js mapStateToProps profile: ', profile);
   const { userLoginSession, userDetails } = auth;
   const { birthDate, aboutMe, primaryInterest } = profile;
