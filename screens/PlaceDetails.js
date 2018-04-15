@@ -25,7 +25,7 @@ class PlaceDetails extends Component {
     return (
       <View style={ {height: 50, flexDirection: 'row', borderWidth: 0, borderColor: 'red'} } >
 
-        <View style={{ borderWidth: 0, borderColor: 'green', width: "85%", backgroundColor: 'sandybrown', alignItems: 'center' }} >
+        <View style={{ borderWidth: 0, width: "85%", backgroundColor: 'indigo', alignItems: 'center' }} >
           <TouchableOpacity style={{alignItems: 'center', width: "100%", height: "100%"}} onPress={this.displayPlaceReview}>
             <View style={{alignItems: 'center', width: "100%", height: "100%"}}>
               <Text style={styles.textHeadingStyle}>{this.props.selectedPlaceDetails.poiName} ({this.props.selectedPlaceDetails.poiType})</Text>
@@ -45,11 +45,11 @@ class PlaceDetails extends Component {
           </TouchableOpacity>
         </View>
 
-        <View style={{ borderWidth: 0, borderColor: 'blue', width: "15%", backgroundColor: 'sandybrown', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ borderWidth: 0, width: "15%", backgroundColor: 'indigo', alignItems: 'center', justifyContent: 'center' }}>
           <TouchableOpacity style={{borderWidth: 0, alignItems: 'center', justifyContent: 'center', width: "100%", height: "100%"}}
            onPress={this.createPlaceReview}>
             <View style={{alignItems: 'center', width: "100%"}}>
-              <Text style={{color: 'blue'}}>Review</Text>
+              <Text style={{color: 'yellow', fontSize: 14, fontWeight: "bold", fontStyle: "italic"}}>Review</Text>
             </View>
           </TouchableOpacity>
         </View>

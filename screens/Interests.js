@@ -80,31 +80,29 @@ class Interests extends Component {
 
   render() {
     console.log('render Interests');
-    //if (this.props.allInterests) {
-      ///*
-      return (
-        <List containerStyle={styles.listStyle}>
-          <FlatList
-            data={OBJECTS}
-            renderItem={ ({item}) => (
-              <TouchableHighlight key={item.intId} onPress={ () => this.goToProfile(item) } >
-                <ListItem
-                  containerStyle={{ borderBottomWidth: 0 }}
-                  roundAvatar
-                  title={item.name}
-                  subtitle={item.catId}
-                />
-              </TouchableHighlight>
-              )}
-              keyExtractor={item => item.intId}
-              ItemSeparatorComponent={this.renderSeperator}
-              ListHeaderComponent={this.renderHeader}
-              ListFooterComponent={this.renderFooter}
-              onRefresh={this.handleRefresh}
-              refreshing={this.state.refreshing}
-          />
-        </List>
-      );
+    return (
+      <List containerStyle={styles.listStyle}>
+        <FlatList
+          data={OBJECTS}
+          renderItem={ ({item}) => (
+            <TouchableHighlight key={item.intId} onPress={ () => this.goToProfile(item) } >
+              <ListItem
+                containerStyle={{ borderBottomWidth: 0 }}
+                roundAvatar
+                title={item.name}
+                subtitle={item.catId}
+              />
+            </TouchableHighlight>
+            )}
+            keyExtractor={item => item.intId}
+            ItemSeparatorComponent={this.renderSeperator}
+            ListHeaderComponent={this.renderHeader}
+            ListFooterComponent={this.renderFooter}
+            onRefresh={this.handleRefresh}
+            refreshing={this.state.refreshing}
+        />
+      </List>
+    );
   }
 }
 

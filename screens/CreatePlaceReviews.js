@@ -5,13 +5,13 @@ import { Rating } from 'react-native-elements';
 class CreatePlaceReviews extends Component {
 
   state = {
-    rating : 10
+    rating : 5
   };
 
   ratingFinished = (rating) => {
-    console.log('rating: ', rating);
-    this.setState( {rating: 2*rating} );
-    console.log('this.state.rating: ', this.state.rating)
+    //console.log('rating: ', rating);
+    this.setState( {rating: rating} );
+    //console.log('this.state.rating: ', this.state.rating)
   };
 
   render() {
@@ -32,9 +32,9 @@ class CreatePlaceReviews extends Component {
                 type="star"
                 //showRating
                 fractions={1}
-                startingValue={this.state.rating/2}
+                startingValue={this.state.rating}
                 imageSize={20}
-                ratingCount={this.state.rating}
+                ratingCount={5}
                 style={{ borderWidth: 0, borderColor: 'green', height: 10, paddingVertical: 3 }}
                 onFinishRating={this.ratingFinished}
                 //onFinishRating={(rating) => this.setState({rating})}
